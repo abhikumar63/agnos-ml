@@ -1,0 +1,66 @@
+syntax = "proto3";
+
+package agnos.inference;
+
+option go_package = "agnos-ml/api/grpc/inference";
+
+// The core C++ compute engine service
+service InferenceEngine {
+  // Single inference execution
+  rpc Predict(PredictRequest) returns (PredictResponse);
+  
+  // Batch processing for higher throughput
+  rpc BatchPredict(BatchPredictRequest) returns (BatchPredictResponse);
+  
+  // Triggers the engine to read a binary model artifact from disk
+  rpc LoadModel(LoadModelRequest) returns (LoadModelResponse);
+  
+  // Liveness and readiness probe
+  rpc HealthCheck(HealthRequest) returns (HealthResponse);
+}
+
+message PredictRequest {
+  string model_id = 1;
+  string correlation_id = 2; // Passed from Go API for request tracking
+  repeated int64 input_shape = 3; // e.g., [1, 28, 28]
+  repeated float tensor_data = 4; // Flattened input array
+}
+
+message PredictResponse {
+  string correlation_id = 1;
+  repeated float prediction = 2; // Flattened output array
+  repeated int64 output_shape = 3; // Shape of the prediction tensor
+  int64 computation_time_us = 4; // Tracked internally by C++ for Prometheus metrics (microseconds)
+  string error_message = 5; // Empty if successful
+}
+
+message BatchPredictRequest {
+  repeated PredictRequest requests = 1;
+}
+
+message BatchPredictResponse {
+  repeated PredictResponse responses = 1;
+}
+
+message LoadModelRequest {
+  string model_id = 1;
+  string artifact_path = 2; // Absolute or relative path to the .agnos binary file
+}
+
+message LoadModelResponse {
+  bool success = 1;
+  string error_message = 2;
+  int64 load_time_ms = 3;
+}
+
+message HealthRequest {}
+
+message HealthResponse {
+  enum Status {
+    UNKNOWN = 0;
+    SERVING = 1;
+    NOT_SERVING = 2;
+  }
+  Status status = 1;
+  int32 active_models_count = 2;
+}
