@@ -1,0 +1,5 @@
+# Milestone 1 Skeleton
+FROM golang:1.26.4-alpine
+WORKDIR /app
+# Full implementation will happen in Milestone 4
+CMD ["echo", "Go API Container Scaffolded"]

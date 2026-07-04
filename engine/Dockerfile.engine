@@ -1,0 +1,6 @@
+# Milestone 1 Skeleton
+FROM ubuntu:22.04
+RUN apt-get update && apt-get install -y cmake build-essential
+WORKDIR /app
+# Full implementation will happen in Milestone 4
+CMD ["echo", "C++ Engine Container Scaffolded"]

@@ -1,0 +1,163 @@
+# =====================================================================
+# OS / Environment
+# =====================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# =====================================================================
+# IDEs / Editors
+# =====================================================================
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
+.history/
+
+# JetBrains
+.idea/
+*.iml
+*.iws
+
+# Vim / Emacs
+*.swp
+*.swo
+*~
+\#*\#
+
+# =====================================================================
+# Build Directories (Global)
+# =====================================================================
+build/
+bin/
+dist/
+
+# =====================================================================
+# C++ / CMake (Engine)
+# =====================================================================
+# CMake
+CMakeCache.txt
+CMakeFiles/
+Makefile
+*.cmake
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+cpack_config.cmake
+
+# Build artifacts
+*.o
+*.ko
+*.obj
+*.elf
+
+# Libraries and Executables
+*.lib
+*.a
+*.la
+*.lo
+*.so
+*.so.*
+*.dylib
+*.dll
+*.exe
+*.out
+*.app
+*.i
+*.dSYM/
+
+# Engine specific
+engine/build/
+engine/cmake-build-*/
+
+# =====================================================================
+# Go (Backend)
+# =====================================================================
+# Binaries
+*.test
+*.prof
+
+# Project specific
+backend/bin/
+backend/vendor/
+
+# Coverage
+coverage.out
+coverage.html
+cover.out
+
+# =====================================================================
+# Python (Scripts / ML)
+# =====================================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Testing / Tooling
+.pytest_cache/
+.coverage
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.tox/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# =====================================================================
+# Data & ML Models
+# =====================================================================
+# Exclude raw/processed data files
+data/**/*.csv
+data/**/*.tsv
+data/**/*.jsonl
+data/**/*.parquet
+data/**/*.h5
+data/**/*.tfrecord
+data/raw/
+data/processed/
+
+# Exclude large model artifacts
+data/models/**/*.pt
+data/models/**/*.pth
+data/models/**/*.onnx
+data/models/**/*.bin
+data/models/**/*.pb
+data/models/**/*.tflite
+data/models/**/*.safetensors
+data/models/**/*.gguf
+
+# =====================================================================
+# Infrastructure & Logs
+# =====================================================================
+# Logs
+*.log
+logs/
+
+# Secrets & Environment Variables
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+*.cert
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
