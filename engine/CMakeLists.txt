@@ -21,6 +21,8 @@ include_directories(
 # Define the source files, including our generated Protobuf/gRPC stubs
 set(SOURCES
     ${SRC_DIR}/main.cpp
+    ${SRC_DIR}/backend/cpu_backend.cpp
+    ${SRC_DIR}/primitives/tensor.cpp
     ${PROTO_GEN_DIR}/inference.pb.cc
     ${PROTO_GEN_DIR}/inference.grpc.pb.cc
 )
