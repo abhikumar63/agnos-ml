@@ -1,3 +1,12 @@
 {
-    "python-envs.defaultEnvManager": "ms-python.python:pyenv"
+    "python-envs.defaultEnvManager": "ms-python.python:pyenv",
+    "cmake.sourceDirectory": "/Users/rocky/Developer/agnos-ml/engine",
+    "cSpell.words": [
+        "agnos",
+        "AGNS",
+        "libprotobuf",
+        "matmul",
+        "Matmul",
+        "relu"
+    ]
 }

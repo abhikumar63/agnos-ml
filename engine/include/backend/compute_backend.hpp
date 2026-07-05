@@ -13,11 +13,13 @@ public:
   virtual ~ComputeBackend() = default;
 
   // Core Linear Algebra
-  // Computes: C = A * B
   virtual Tensor matmul(const Tensor &a, const Tensor &b) = 0;
-
-  // Computes: C = A + B (element-wise addition, primarily for biases)
   virtual void add_in_place(Tensor &a, const Tensor &b) = 0;
+
+  // Activation Functions (In-Place Modifications)
+    virtual void relu_in_place(Tensor& t) = 0;
+    virtual void sigmoid_in_place(Tensor& t) = 0;
+    virtual void tanh_in_place(Tensor& t) = 0;
 };
 
 } // namespace backend

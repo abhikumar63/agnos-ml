@@ -23,6 +23,8 @@ set(SOURCES
     ${SRC_DIR}/main.cpp
     ${SRC_DIR}/backend/cpu_backend.cpp
     ${SRC_DIR}/primitives/tensor.cpp
+    ${SRC_DIR}/core/model_loader.cpp
+    ${SRC_DIR}/core/neural_network.cpp
     ${PROTO_GEN_DIR}/inference.pb.cc
     ${PROTO_GEN_DIR}/inference.grpc.pb.cc
 )

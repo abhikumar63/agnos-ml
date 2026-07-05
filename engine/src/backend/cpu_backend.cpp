@@ -1,5 +1,7 @@
 #include "backend/cpu_backend.hpp"
 #include <stdexcept>
+#include <cmath>
+#include <algorithm>
 
 namespace agnos {
 namespace backend {
@@ -63,6 +65,31 @@ void CPUBackend::add_in_place(Tensor &a, const Tensor &b) {
       a.at(i, j) += b[j];
     }
   }
+}
+
+// ReLU: f(x) = max(0, x)
+void CPUBackend::relu_in_place(Tensor& t) {
+    auto& data = t.mutable_data();
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] = std::max(0.0f, data[i]);
+    }
+}
+
+// Sigmoid: f(x) = 1 / (1 + exp(-x))
+void CPUBackend::sigmoid_in_place(Tensor& t) {
+    auto& data = t.mutable_data();
+    for (size_t i = 0; i < data.size(); ++i) {
+        // Fast approximation or standard cmath
+        data[i] = 1.0f / (1.0f + std::exp(-data[i]));
+    }
+}
+
+// Tanh: standard hyperbolic tangent
+void CPUBackend::tanh_in_place(Tensor& t) {
+    auto& data = t.mutable_data();
+    for (size_t i = 0; i < data.size(); ++i) {
+        data[i] = std::tanh(data[i]);
+    }
 }
 
 } // namespace backend
