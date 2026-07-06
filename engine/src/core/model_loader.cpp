@@ -45,11 +45,21 @@ std::vector<Layer> ModelLoader::load_agnos(const std::string& filepath) {
         file.read(reinterpret_cast<char*>(&out_dim), sizeof(uint32_t));
 
         // PyTorch linear weights are exported as (out_features, in_features)
-        Tensor weights({out_dim, in_dim});
+        Tensor weights({in_dim, out_dim});
         Tensor biases({out_dim});
 
+        // Read PyTorch's raw floats into a temporary buffer first (out_dim x in_dim)
+        std::vector<float> temp_weights(out_dim * in_dim);
+        file.read(reinterpret_cast<char*>(temp_weights.data()), temp_weights.size() * sizeof(float));
+        
+        // Transpose the matrix mathematically: temp_weights[o][i] -> weights[i][o]
+        for (size_t o = 0; o < out_dim; ++o) {
+            for (size_t i = 0; i < in_dim; ++i) {
+                weights.at(i, o) = temp_weights[o * in_dim + i];
+            }
+        }
+
         // Read Raw Floats directly into the Tensor's contiguous memory
-        file.read(reinterpret_cast<char*>(weights.mutable_data().data()), weights.size() * sizeof(float));
         file.read(reinterpret_cast<char*>(biases.mutable_data().data()), biases.size() * sizeof(float));
 
         layers.push_back({std::move(weights), std::move(biases), act_type});
