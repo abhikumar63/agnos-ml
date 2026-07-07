@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package agnos.inference;
 
-option go_package = "agnos-ml/api/grpc/inference";
+option go_package = "agnos-backend/proto_gen;inference";
 
 // The core C++ compute engine service
 service InferenceEngine {
