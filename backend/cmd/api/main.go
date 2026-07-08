@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	pb "agnos-backend/proto_gen" // Imports your generated Protobuf stubs
@@ -24,8 +25,12 @@ type PredictPayload struct {
 
 func main() {
 	// 1. Establish gRPC connection to the C++ Compute Engine
-	engineAddress := "localhost:50051"
-	conn, err := grpc.Dial(engineAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	engineAddress := os.Getenv("ENGINE_ADDRESS")
+	if engineAddress == "" {
+		engineAddress = "localhost:50051"
+	}
+
+	conn, err := grpc.NewClient(engineAddress, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.Fatalf("❌ Failed to connect to C++ Engine: %v", err)
 	}

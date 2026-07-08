@@ -6,13 +6,17 @@ services:
   # ----------------------------------------
   agnos-engine:
     build:
-      context: ./engine
-      dockerfile: Dockerfile.engine
+      context: .
+      dockerfile: ./engine/Dockerfile.engine
     container_name: agnos_engine_cpp
+    environment:
+      # We now point to the user-space /app/data mount
+      - MODEL_PATH=/app/data/models/v1_base_mlp.agnos 
     ports:
       - "50051:50051"
     volumes:
-      - ./data/models:/app/models # Mount our offline trained .agnos files
+      # Mount the local folder safely into the /app workspace
+      - ./data/models:/app/data/models 
     networks:
       - agnos-net
 
@@ -21,56 +25,58 @@ services:
       context: ./backend
       dockerfile: Dockerfile.api
     container_name: agnos_api_go
+    environment:
+      - ENGINE_ADDRESS=agnos-engine:50051
     ports:
       - "8080:8080"
     depends_on:
       - agnos-engine
-      - kafka
-      - redis
-      - postgres
+      # - kafka
+      # - redis
+      # - postgres
     networks:
       - agnos-net
 
   # ----------------------------------------
   # 2. Infrastructure Services
   # ----------------------------------------
-  kafka:
-    image: bitnami/kafka:latest
-    container_name: agnos_kafka
-    environment:
-      - KAFKA_ENABLE_KRAFT=yes
-      - KAFKA_CFG_PROCESS_ROLES=broker,controller
-      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
-      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
-      - KAFKA_BROKER_ID=1
-      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
-      - ALLOW_PLAINTEXT_LISTENER=yes
-    ports:
-      - "9092:9092"
-    networks:
-      - agnos-net
+  # kafka:
+  #   image: bitnami/kafka:latest
+  #   container_name: agnos_kafka
+  #   environment:
+  #     - KAFKA_ENABLE_KRAFT=yes
+  #     - KAFKA_CFG_PROCESS_ROLES=broker,controller
+  #     - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+  #     - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
+  #     - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+  #     - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka:9092
+  #     - KAFKA_BROKER_ID=1
+  #     - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka:9093
+  #     - ALLOW_PLAINTEXT_LISTENER=yes
+  #   ports:
+  #     - "9092:9092"
+  #   networks:
+  #     - agnos-net
 
-  redis:
-    image: redis:7-alpine
-    container_name: agnos_redis
-    ports:
-      - "6379:6379"
-    networks:
-      - agnos-net
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: agnos_redis
+  #   ports:
+  #     - "6379:6379"
+  #   networks:
+  #     - agnos-net
 
-  postgres:
-    image: postgres:15-alpine
-    container_name: agnos_postgres
-    environment:
-      - POSTGRES_USER=agnos_admin
-      - POSTGRES_PASSWORD=agnos_secret
-      - POSTGRES_DB=agnos_registry
-    ports:
-      - "5432:5432"
-    networks:
-      - agnos-net
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: agnos_postgres
+  #   environment:
+  #     - POSTGRES_USER=agnos_admin
+  #     - POSTGRES_PASSWORD=agnos_secret
+  #     - POSTGRES_DB=agnos_registry
+  #   ports:
+  #     - "5432:5432"
+  #   networks:
+  #     - agnos-net
 
 networks:
   agnos-net:

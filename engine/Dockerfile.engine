@@ -1,6 +1,53 @@
-# Milestone 1 Skeleton
-FROM ubuntu:22.04
-RUN apt-get update && apt-get install -y cmake build-essential
-WORKDIR /app
-# Full implementation will happen in Milestone 4
-CMD ["echo", "C++ Engine Container Scaffolded"]
+# Stage 1: Build the C++ Engine
+FROM alpine:3.24 AS builder
+
+# Install modern C++ build tools and gRPC/Protobuf libraries via apk
+RUN apk add --no-cache \
+    build-base \
+    cmake \
+    grpc-dev \
+    protobuf-dev \
+    linux-headers \
+    grpc-plugins \
+    protobuf
+
+WORKDIR /build
+
+# Copy files from the ROOT context so we have access to the proto folder
+COPY engine/CMakeLists.txt .
+COPY engine/include/ ./include/
+COPY engine/src/ ./src/
+COPY proto/ ./proto/
+
+# RE-GENERATE the C++ Protobuf stubs using Alpine's native protoc version
+# This prevents the "incomplete type" mismatch between macOS and Alpine
+RUN mkdir -p src/proto_gen && \
+    protoc -I=proto \
+    --cpp_out=src/proto_gen \
+    --grpc_out=src/proto_gen \
+    --plugin=protoc-gen-grpc=$(which grpc_cpp_plugin) \
+    proto/inference.proto
+
+# Compile the engine
+RUN mkdir -p build && cd build && \
+    cmake .. && \
+    make -j$(nproc)
+
+# Stage 2: Minimal Runtime Environment
+FROM alpine:3.24
+
+# Install ONLY the runtime shared libraries needed to execute
+# CRITICAL FIX: Added grpc-cpp to provide libgrpc++.so at runtime
+RUN apk add --no-cache \
+    libstdc++ \
+    grpc \
+    grpc-cpp \
+    protobuf
+
+# Map the working directory to emulate local setup
+WORKDIR /app/build
+COPY --from=builder /build/build/agnos_engine .
+
+EXPOSE 50051
+
+CMD ["./agnos_engine"]
